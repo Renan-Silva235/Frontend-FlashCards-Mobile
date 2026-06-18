@@ -77,7 +77,7 @@ export default function Dashboard({ navigation }) {
             <Text style={styles.badgeText}>
               {item.language === "English"
                 ? "🇺🇸 Inglês"
-                : "🇷🇺 Espanhol"}
+                : "🇪🇸 Espanhol"}
             </Text>
           </View>
 
