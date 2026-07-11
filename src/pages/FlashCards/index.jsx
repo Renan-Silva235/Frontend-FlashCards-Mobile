@@ -8,27 +8,31 @@ import {
 } from "react-native";
 import api from "../../config/api";
 import Modal from "react-native-modal";
-import { speak } from "../../services/speech/speechService";
 import styles from "./styles";
+import { getLanguageCode } from "../../services/speech/getLanguageCode";
+import EditButton from "../../components/CustomButton/EditButton";
+import CloseButton from "../../components/CustomButton/CloseButton";
+import SpeakerButton from "../../components/CustomButton/SpeakerButton";
+import DeleteButton from "../../components/CustomButton/DeleteButton";
+import DeleteConfirmationModal from "../../components/CustomButton/DeleteConfirmationModal";
 
 export default function FlashCards({ route, navigation }) {
-  const { deckId, deckName } = route.params;
+  const { deckId, deckName, deckLanguage } = route.params;
   const [selectedCard, setSelectedCard] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cardToDelete, setCardToDelete] = useState(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
   async function loadCards() {
     try {
       setLoading(true);
 
-      const response = await api.get(
-        `/flashcards/deck/${deckId}`
-      );
+      const response = await api.get(`/flashcards/deck/${deckId}`);
 
       setCards(response.data);
     } catch (error) {
-      console.log(error?.response?.data);
     } finally {
       setLoading(false);
     }
@@ -48,37 +52,32 @@ export default function FlashCards({ route, navigation }) {
 
   function renderCard({ item }) {
     return (
-      <TouchableOpacity
-        onPress={() => {
-          setSelectedCard(item);
-          setModalVisible(true);
-        }}
-        style={styles.card}
-      >
-        <Text
-          style={styles.cardWord}
-        >
-          {item.word}
-        </Text>
+      <View style={{ position: "relative" }}>
+        <DeleteButton
+          onPress={() => {
+            setCardToDelete(item);
+            setDeleteModalVisible(true);
+          }}
+        />
 
-        <Text
-          style={styles.cardTranslation}
+        <TouchableOpacity
+          onPress={() => {
+            setSelectedCard(item);
+            setModalVisible(true);
+          }}
+          style={styles.card}
         >
-          {item.translation}
-        </Text>
-      </TouchableOpacity>
+          <Text style={styles.cardWord}>{item.word}</Text>
+
+          <Text style={styles.cardTranslation}>{item.translation}</Text>
+        </TouchableOpacity>
+      </View>
     );
   }
 
   return (
-    <View
-      style={styles.container}
-    >
-      <Text
-        style={styles.title}
-      >
-        {deckName}
-      </Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>{deckName}</Text>
 
       <TouchableOpacity
         style={styles.newCardButton}
@@ -89,11 +88,20 @@ export default function FlashCards({ route, navigation }) {
           })
         }
       >
-        <Text
-          style={styles.newCardButtonText}
-        >
-          Novo Card
-        </Text>
+        <Text style={styles.newCardButtonText}>Novo Card</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.newCardButton}
+        onPress={() =>
+          navigation.navigate("FlashCardStudy", {
+            deckId,
+            deckName,
+            deckLanguage,
+          })
+        }
+      >
+        <Text style={styles.newCardButtonText}>Estudar</Text>
       </TouchableOpacity>
 
       {loading ? (
@@ -104,11 +112,7 @@ export default function FlashCards({ route, navigation }) {
           keyExtractor={(item) => String(item.id)}
           renderItem={renderCard}
           ListEmptyComponent={
-            <Text
-              style={styles.emptyText}
-            >
-              Nenhum card criado
-            </Text>
+            <Text style={styles.emptyText}>Nenhum card criado</Text>
           }
         />
       )}
@@ -117,138 +121,95 @@ export default function FlashCards({ route, navigation }) {
         isVisible={modalVisible}
         onBackdropPress={() => setModalVisible(false)}
       >
-        <View
-          style={styles.modalContainer}
-        >
-          <View
-            style={styles.modalHeader}
-          >
-            <Text
-              style={styles.modalWord}
-            >
-              {selectedCard?.word}
-            </Text>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalWord}>{selectedCard?.word}</Text>
 
-            <TouchableOpacity
-              onPress={() => speak(selectedCard?.word)}
-            >
-              <Text
-                style={styles.speakerIconMain}
-              >
-                🔊
-              </Text>
-            </TouchableOpacity>
+            <SpeakerButton
+              text={selectedCard?.word}
+              language={getLanguageCode(deckLanguage)}
+              big
+            />
           </View>
 
-          <Text
-            style={styles.translation}
-          >
-            {selectedCard?.translation}
-          </Text>
+          <Text style={styles.translation}>{selectedCard?.translation}</Text>
 
           {selectedCard?.past ? (
-            <View
-              style={styles.rowSpeech}
-            >
-              <Text style={{ color: "#fff" }}>
-                Past: {selectedCard.past}
-              </Text>
+            <View style={styles.rowSpeech}>
+              <Text style={{ color: "#fff" }}>Past: {selectedCard.past}</Text>
 
-              <TouchableOpacity
-                onPress={() => speak(selectedCard.past)}
-              >
-                <Text style={{ fontSize: 18 }}>🔊</Text>
-              </TouchableOpacity>
+              <SpeakerButton
+                text={selectedCard.past}
+                language={getLanguageCode(deckLanguage)}
+              />
             </View>
           ) : null}
 
           {selectedCard?.present ? (
-            <View
-              style={styles.rowSpeech}
-            >
+            <View style={styles.rowSpeech}>
               <Text style={{ color: "#fff" }}>
                 Present: {selectedCard.present}
               </Text>
 
-              <TouchableOpacity
-                onPress={() => speak(selectedCard.present)}
-              >
-                <Text style={{ fontSize: 18 }}>🔊</Text>
-              </TouchableOpacity>
+              <SpeakerButton
+                text={selectedCard.present}
+                language={getLanguageCode(deckLanguage)}
+              />
             </View>
           ) : null}
 
           {selectedCard?.future ? (
-            <View
-              style={styles.rowSpeech}
-            >
+            <View style={styles.rowSpeech}>
               <Text style={{ color: "#fff" }}>
                 Future: {selectedCard.future}
               </Text>
 
-              <TouchableOpacity
-                onPress={() => speak(selectedCard.future)}
-              >
-                <Text style={{ fontSize: 18 }}>🔊</Text>
-              </TouchableOpacity>
+              <SpeakerButton
+                text={selectedCard.future}
+                language={getLanguageCode(deckLanguage)}
+              />
             </View>
           ) : null}
 
           {selectedCard?.examplePhrase1 ? (
-            <View
-              style={styles.rowSpeechTop}
-            >
-              <Text
-                style={styles.phraseText}
-              >
+            <View style={styles.rowSpeechTop}>
+              <Text style={styles.phraseText}>
                 • {selectedCard.examplePhrase1}
               </Text>
 
-              <TouchableOpacity
-                onPress={() => speak(selectedCard.examplePhrase1)}
-              >
-                <Text style={{ fontSize: 18 }}>🔊</Text>
-              </TouchableOpacity>
+              <SpeakerButton
+                text={selectedCard.examplePhrase1}
+                language={getLanguageCode(deckLanguage)}
+              />
             </View>
           ) : null}
 
           {selectedCard?.examplePhrase2 ? (
-            <View
-              style={styles.rowSpeech}
-            >
-              <Text
-                style={styles.phraseText}
-              >
+            <View style={styles.rowSpeech}>
+              <Text style={styles.phraseText}>
                 • {selectedCard.examplePhrase2}
               </Text>
 
-              <TouchableOpacity
-                onPress={() => speak(selectedCard.examplePhrase2)}
-              >
-                <Text style={{ fontSize: 18 }}>🔊</Text>
-              </TouchableOpacity>
+              <SpeakerButton
+                text={selectedCard.examplePhrase2}
+                language={getLanguageCode(deckLanguage)}
+              />
             </View>
           ) : null}
 
           {selectedCard?.examplePhrase3 ? (
-            <View
-              style={styles.rowSpeech}
-            >
-              <Text
-                style={styles.phraseText}
-              >
+            <View style={styles.rowSpeech}>
+              <Text style={styles.phraseText}>
                 • {selectedCard.examplePhrase3}
               </Text>
 
-              <TouchableOpacity
-                onPress={() => speak(selectedCard.examplePhrase3)}
-              >
-                <Text style={{ fontSize: 18 }}>🔊</Text>
-              </TouchableOpacity>
+              <SpeakerButton
+                text={selectedCard.examplePhrase3}
+                language={getLanguageCode(deckLanguage)}
+              />
             </View>
           ) : null}
-          <TouchableOpacity
-            style={styles.editButton}
+          <EditButton
             onPress={() => {
               setModalVisible(false);
 
@@ -256,25 +217,27 @@ export default function FlashCards({ route, navigation }) {
                 card: selectedCard,
               });
             }}
-          >
-            <Text
-              style={styles.buttonText}
-            >
-              Editar
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.closeButton}
-            onPress={() => setModalVisible(false)}
-          >
-            <Text
-              style={styles.buttonText}
-            >
-              Fechar
-            </Text>
-          </TouchableOpacity>
+          />
+          <CloseButton onPress={() => setModalVisible(false)} />
         </View>
       </Modal>
+      <DeleteConfirmationModal
+        visible={deleteModalVisible}
+        message="Deseja realmente excluir este card?"
+        onClose={() => setDeleteModalVisible(false)}
+        onConfirm={async () => {
+          try {
+            await api.delete(`/flashcards/${cardToDelete.id}`);
+
+            setDeleteModalVisible(false);
+            setModalVisible(false);
+
+            loadCards();
+          } catch (error) {
+            console.log(error?.response?.data);
+          }
+        }}
+      />
     </View>
   );
 }

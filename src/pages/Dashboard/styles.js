@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
   cardCount: {
     color: "#94a3b8",
     fontSize: 13,
+    marginLeft: 10,
   },
   emptyText: {
     color: "#64748b",

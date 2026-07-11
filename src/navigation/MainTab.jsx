@@ -1,10 +1,9 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Grid, PlusCircle, BookOpen } from "lucide-react-native";
+import { Grid, PlusCircle } from "lucide-react-native";
 
 import Dashboard from "../pages/Dashboard";
 import DeckList from "../pages/CreateDeck";
-import FlashCardStudy from "../pages/FlashCardStudy";
 
 const Tab = createBottomTabNavigator();
 
@@ -38,16 +37,6 @@ export default function MainTab() {
           tabBarLabel: "Novo",
           tabBarIcon: ({ color, size }) => (
             <PlusCircle color={color} size={size} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Estudar"
-        component={FlashCardStudy}
-        options={{
-          tabBarLabel: "Estudar",
-          tabBarIcon: ({ color, size }) => (
-            <BookOpen color={color} size={size} />
           ),
         }}
       />

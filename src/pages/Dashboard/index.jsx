@@ -12,7 +12,12 @@ import {
 import { Search, Plus, Star } from "lucide-react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { loadDecksRequest } from "../../store/modules/deck/actions";
-import styles from "./styles"
+import styles from "./styles";
+import DeleteButton from "../../components/CustomButton/DeleteButton";
+import api from "../../config/api";
+import DeleteConfirmationModal from "../../components/CustomButton/DeleteConfirmationModal";
+import * as DashboardActions from "../../store/modules/dashboard/actions";
+import { toggleFavoriteRequest } from "../../store/modules/deck/actions";
 
 export default function Dashboard({ navigation }) {
   const dispatch = useDispatch();
@@ -20,28 +25,52 @@ export default function Dashboard({ navigation }) {
 
   const loading = useSelector((state) => state.deck.loading);
 
-  const [search, setSearch] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState("all");
+  const dashboard = useSelector((state) => state.dashboard);
 
-  const stats = {
-    totalCards: decks.reduce((acc, deck) => acc + (deck.cardsCount || 0), 0),
-    correct: 12,
-    incorrect: 3,
-    favorites: decks.filter((d) => d.isFavorite).length,
+  const statistics = dashboard?.statistics ?? {
+    totalCards: 0,
+    easy: 0,
+    medium: 0,
+    hard: 0,
   };
+
+  const [search, setSearch] = useState("");
+
+  const [selectedLanguage, setSelectedLanguage] = useState("all");
+  const [deckToDelete, setDeckToDelete] = useState(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+
+  useEffect(() => {
+    dispatch(
+      DashboardActions.loadStatisticsRequest(
+        selectedLanguage === "all" ? null : selectedLanguage,
+      ),
+    );
+  }, [dispatch, selectedLanguage]);
 
   useEffect(() => {
     dispatch(loadDecksRequest());
   }, [dispatch]);
 
+  async function handleDeleteDeck() {
+    try {
+      await api.delete(`/decks/${deckToDelete.id}`);
+
+      setDeleteModalVisible(false);
+      setDeckToDelete(null);
+
+      dispatch(loadDecksRequest());
+    } catch (error) {
+      console.log(error?.response?.data);
+    }
+  }
   const filteredDecks = decks.filter((deck) => {
     const matchesSearch =
       deck.name.toLowerCase().includes(search.toLowerCase()) ||
       deck.category.toLowerCase().includes(search.toLowerCase());
 
     const matchesLang =
-      selectedLanguage === "all" ||
-      deck.language === selectedLanguage;
+      selectedLanguage === "all" || deck.language === selectedLanguage;
 
     return matchesSearch && matchesLang;
   });
@@ -54,20 +83,28 @@ export default function Dashboard({ navigation }) {
           navigation.navigate("FlashCards", {
             deckId: item.id,
             deckName: item.name,
+            deckLanguage: item.language,
           })
         }
       >
+        <DeleteButton
+          onPress={() => {
+            setDeckToDelete(item);
+            setDeleteModalVisible(true);
+          }}
+        />
         <View style={styles.deckHeader}>
           <View>
             <Text style={styles.deckName}>{item.name}</Text>
             <Text style={styles.deckCategory}>{item.category}</Text>
           </View>
-
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => dispatch(toggleFavoriteRequest(item.id))}
+          >
             <Star
               size={20}
-              color={item.isFavorite ? "#eab308" : "#64748b"}
-              fill={item.isFavorite ? "#eab308" : "none"}
+              color={item.favorite ? "#eab308" : "#64748b"}
+              fill={item.favorite ? "#eab308" : "none"}
             />
           </TouchableOpacity>
         </View>
@@ -77,13 +114,15 @@ export default function Dashboard({ navigation }) {
             <Text style={styles.badgeText}>
               {item.language === "English"
                 ? "🇺🇸 Inglês"
-                : "🇪🇸 Espanhol"}
+                : item.language === "Spanish"
+                  ? "🇪🇸 Espanhol"
+                  : item.language === "Turkish"
+                    ? "🇹🇷 Turco"
+                    : null}
             </Text>
           </View>
 
-          <Text style={styles.cardCount}>
-            {item.cardsCount || 0} Cards
-          </Text>
+          <Text style={styles.cardCount}>{item.cardsCount || 0} Cards</Text>
         </View>
       </TouchableOpacity>
     );
@@ -94,9 +133,7 @@ export default function Dashboard({ navigation }) {
       <View style={styles.header}>
         <View>
           <Text style={styles.title}>Dashboard</Text>
-          <Text style={styles.subtitle}>
-            Seus flash cards e progresso
-          </Text>
+          <Text style={styles.subtitle}>Seus flash cards e progresso</Text>
         </View>
 
         <TouchableOpacity
@@ -104,18 +141,12 @@ export default function Dashboard({ navigation }) {
           onPress={() => navigation.navigate("Novo")}
         >
           <Plus size={20} color="#fff" />
-          <Text style={styles.createButtonText}>
-            Novo Deck
-          </Text>
+          <Text style={styles.createButtonText}>Novo Deck</Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.searchContainer}>
-        <Search
-          size={20}
-          color="#64748b"
-          style={styles.searchIcon}
-        />
+        <Search size={20} color="#64748b" style={styles.searchIcon} />
 
         <TextInput
           style={styles.searchInput}
@@ -129,30 +160,30 @@ export default function Dashboard({ navigation }) {
       <View style={styles.statsGrid}>
         <View style={styles.statBox}>
           <Text style={[styles.statValue, { color: "#60a5fa" }]}>
-            {stats.totalCards}
+            {statistics.totalCards}
           </Text>
-          <Text style={styles.statLabel}>Cards</Text>
+          <Text style={styles.statLabel}>Total Cards</Text>
         </View>
 
         <View style={styles.statBox}>
           <Text style={[styles.statValue, { color: "#4ade80" }]}>
-            {stats.correct}
+            {statistics.easy}
           </Text>
-          <Text style={styles.statLabel}>Acertos</Text>
+          <Text style={styles.statLabel}>Cards Fáceis</Text>
         </View>
 
         <View style={styles.statBox}>
           <Text style={[styles.statValue, { color: "#f87171" }]}>
-            {stats.incorrect}
+            {statistics.medium}
           </Text>
-          <Text style={styles.statLabel}>Erros</Text>
+          <Text style={styles.statLabel}>Cards Médios</Text>
         </View>
 
         <View style={styles.statBox}>
           <Text style={[styles.statValue, { color: "#c084fc" }]}>
-            {stats.favorites}
+            {statistics.hard}
           </Text>
-          <Text style={styles.statLabel}>Favoritos</Text>
+          <Text style={styles.statLabel}>Cards Difíceis</Text>
         </View>
       </View>
 
@@ -160,16 +191,14 @@ export default function Dashboard({ navigation }) {
         <TouchableOpacity
           style={[
             styles.tabButton,
-            selectedLanguage === "all" &&
-              styles.tabButtonActive,
+            selectedLanguage === "all" && styles.tabButtonActive,
           ]}
           onPress={() => setSelectedLanguage("all")}
         >
           <Text
             style={[
               styles.tabText,
-              selectedLanguage === "all" &&
-                styles.tabTextActive,
+              selectedLanguage === "all" && styles.tabTextActive,
             ]}
           >
             Todos
@@ -179,16 +208,14 @@ export default function Dashboard({ navigation }) {
         <TouchableOpacity
           style={[
             styles.tabButton,
-            selectedLanguage === "English" &&
-              styles.tabButtonActive,
+            selectedLanguage === "English" && styles.tabButtonActive,
           ]}
           onPress={() => setSelectedLanguage("English")}
         >
           <Text
             style={[
               styles.tabText,
-              selectedLanguage === "English" &&
-                styles.tabTextActive,
+              selectedLanguage === "English" && styles.tabTextActive,
             ]}
           >
             🇺🇸 Inglês
@@ -198,19 +225,33 @@ export default function Dashboard({ navigation }) {
         <TouchableOpacity
           style={[
             styles.tabButton,
-            selectedLanguage === "Spanish" &&
-              styles.tabButtonActive,
+            selectedLanguage === "Spanish" && styles.tabButtonActive,
           ]}
           onPress={() => setSelectedLanguage("Spanish")}
         >
           <Text
             style={[
               styles.tabText,
-              selectedLanguage === "Spanish" &&
-                styles.tabTextActive,
+              selectedLanguage === "Spanish" && styles.tabTextActive,
             ]}
           >
             🇪🇸 Espanhol
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            selectedLanguage === "Turkish" && styles.tabButtonActive,
+          ]}
+          onPress={() => setSelectedLanguage("Turkish")}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              selectedLanguage === "Turkish" && styles.tabTextActive,
+            ]}
+          >
+            🇹🇷 Turco
           </Text>
         </TouchableOpacity>
       </View>
@@ -228,13 +269,17 @@ export default function Dashboard({ navigation }) {
           renderItem={renderDeckCard}
           contentContainerStyle={{ paddingBottom: 24 }}
           ListEmptyComponent={
-            <Text style={styles.emptyText}>
-              Nenhum baralho encontrado.
-            </Text>
+            <Text style={styles.emptyText}>Nenhum baralho encontrado.</Text>
           }
         />
       )}
+
+      <DeleteConfirmationModal
+        visible={deleteModalVisible}
+        message="Deseja realmente excluir o deck?"
+        onConfirm={handleDeleteDeck}
+        onClose={() => setDeleteModalVisible(false)}
+      />
     </View>
   );
 }
-

@@ -16,20 +16,12 @@ export function* signIn({ payload }) {
       password,
     });
 
-    console.log("========== SUCESSO ==========");
-    console.log("STATUS:", response.status);
-    console.log("DATA:", response.data);
-
     const { token, user } = response.data;
 
     yield AsyncStorage.setItem("@FlashCards:token", token);
 
     yield put(signInSuccess(token, user));
   } catch (error) {
-    console.log("========== ERRO LOGIN ==========");
-
-    console.log("MESSAGE:", error.message);
-
     if (error.response) {
       console.log("STATUS:", error.response.status);
       console.log("DATA:", error.response.data);
@@ -48,7 +40,7 @@ export function* signIn({ payload }) {
       "Erro no login",
       error.response?.data?.message ||
         error.message ||
-        "Verifique seus dados ou a conexão com o servidor."
+        "Verifique seus dados ou a conexão com o servidor.",
     );
   }
 }

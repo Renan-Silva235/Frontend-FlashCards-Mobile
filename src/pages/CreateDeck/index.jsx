@@ -27,6 +27,8 @@
       const languagesList = [
         { id: '1', label: '🇺🇸 Inglês', value: 'English' },
         { id: '2', label: '🇪🇸 Espanhol', value: 'Spanish' },
+        { id: '3', label: '🇹🇷 Turco', value: 'Turkish' },
+
         //{ id: '3', label: '🇫🇷 Francês', value: 'Francês' },
         //{ id: '4', label: '🇮🇹 Italiano', value: 'Italiano' },
         //{ id: '5', label: '🇩🇪 Alemão', value: 'Alemão' },

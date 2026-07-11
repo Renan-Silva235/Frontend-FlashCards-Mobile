@@ -1,19 +1,17 @@
 import React, { useState } from "react";
-import {
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-} from "react-native";
+import { Text, TouchableOpacity, ScrollView, Alert } from "react-native";
 import api from "../../config/api";
 import styles from "./styles";
+import CloseButton from "../../components/CustomButton/CloseButton";
+import CustomInput from "../../components/CustomInput";
+import SaveButton from "../../components/CustomButton/SaveButton";
 
 export default function CreateCard({ route, navigation }) {
   const { deckId } = route.params;
 
   const [word, setWord] = useState("");
   const [translation, setTranslation] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const [present, setPresent] = useState("");
   const [past, setPast] = useState("");
@@ -25,10 +23,7 @@ export default function CreateCard({ route, navigation }) {
 
   async function handleCreateCard() {
     if (!word || !translation) {
-      Alert.alert(
-        "Erro",
-        "Palavra e tradução são obrigatórias."
-      );
+      Alert.alert("Erro", "Palavra e tradução são obrigatórias.");
       return;
     }
 
@@ -53,94 +48,55 @@ export default function CreateCard({ route, navigation }) {
     } catch (error) {
       console.log(error?.response?.data);
 
-      Alert.alert(
-        "Erro",
-        "Não foi possível criar o card."
-      );
+      Alert.alert("Erro", "Não foi possível criar o card.");
     }
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-    >
-      <Text style={styles.title}>
-        Novo Card
-      </Text>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+      <Text style={styles.title}>Novo Card</Text>
+      <CustomInput placeholder="Palavra" value={word} onChangeText={setWord} />
 
-      <TextInput
-        placeholder="Palavra"
-        placeholderTextColor="#94a3b8"
-        value={word}
-        onChangeText={setWord}
-        style={styles.input}
-      />
-
-      <TextInput
+      <CustomInput
         placeholder="Tradução"
-        placeholderTextColor="#94a3b8"
         value={translation}
         onChangeText={setTranslation}
-        style={styles.input}
       />
 
-      <TextInput
+      <CustomInput
         placeholder="Presente"
-        placeholderTextColor="#94a3b8"
         value={present}
         onChangeText={setPresent}
-        style={styles.input}
       />
 
-      <TextInput
-        placeholder="Passado"
-        placeholderTextColor="#94a3b8"
-        value={past}
-        onChangeText={setPast}
-        style={styles.input}
-      />
+      <CustomInput placeholder="Passado" value={past} onChangeText={setPast} />
 
-      <TextInput
+      <CustomInput
         placeholder="Futuro"
-        placeholderTextColor="#94a3b8"
         value={future}
         onChangeText={setFuture}
-        style={styles.input}
       />
 
-      <TextInput
+      <CustomInput
         placeholder="Exemplo 1"
-        placeholderTextColor="#94a3b8"
         value={examplePhrase1}
         onChangeText={setExamplePhrase1}
-        style={styles.input}
       />
 
-      <TextInput
+      <CustomInput
         placeholder="Exemplo 2"
-        placeholderTextColor="#94a3b8"
         value={examplePhrase2}
         onChangeText={setExamplePhrase2}
-        style={styles.input}
       />
 
-      <TextInput
+      <CustomInput
         placeholder="Exemplo 3"
-        placeholderTextColor="#94a3b8"
         value={examplePhrase3}
         onChangeText={setExamplePhrase3}
-        style={styles.input}
       />
 
-      <TouchableOpacity
-        onPress={handleCreateCard}
-        style={styles.saveButton}
-      >
-        <Text style={styles.saveButtonText}>
-          Salvar Card
-        </Text>
-      </TouchableOpacity>
+      <SaveButton onPress={handleCreateCard} title="Salvar Card" />
+      <CloseButton setModalVisible={setModalVisible} />
     </ScrollView>
   );
 }
