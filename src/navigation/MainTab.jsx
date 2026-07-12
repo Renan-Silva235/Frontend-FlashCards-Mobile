@@ -4,7 +4,8 @@ import { Grid, PlusCircle } from "lucide-react-native";
 
 import Dashboard from "../pages/Dashboard";
 import DeckList from "../pages/CreateDeck";
-
+import { User } from "lucide-react-native";
+import Profile from "../pages/Profile";
 const Tab = createBottomTabNavigator();
 
 export default function MainTab() {
@@ -38,6 +39,15 @@ export default function MainTab() {
           tabBarIcon: ({ color, size }) => (
             <PlusCircle color={color} size={size} />
           ),
+        }}
+      />
+
+      <Tab.Screen
+        name="Perfil"
+        component={Profile}
+        options={{
+          tabBarLabel: "Perfil",
+          tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
         }}
       />
     </Tab.Navigator>
