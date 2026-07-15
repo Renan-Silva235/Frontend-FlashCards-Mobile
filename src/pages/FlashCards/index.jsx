@@ -18,6 +18,7 @@ import DeleteButton from "../../components/CustomButton/DeleteButton";
 import DeleteConfirmationModal from "../../components/CustomButton/DeleteConfirmationModal";
 import { loadProfileRequest } from "../../store/modules/auth/actions";
 import { X } from "lucide-react-native";
+import { loadDecksRequest } from "../../store/modules/deck/actions";
 
 export default function FlashCards({ route, navigation }) {
   const dispatch = useDispatch();
@@ -243,6 +244,7 @@ export default function FlashCards({ route, navigation }) {
 
             loadCards();
             dispatch(loadProfileRequest());
+            dispatch(loadDecksRequest());
           } catch (error) {
             console.log(error?.response?.data);
           }
