@@ -6,6 +6,7 @@ import BackButton from "../../components/CustomButton/BackButton";
 import CustomInput from "../../components/CustomInput";
 import SaveButton from "../../components/CustomButton/SaveButton";
 import { loadProfileRequest } from "../../store/modules/auth/actions";
+import { loadDecksRequest } from "../../store/modules/deck/actions";
 import { useDispatch } from "react-redux";
 import showApiError from "../../utils/showApiError";
 
@@ -46,6 +47,7 @@ export default function CreateCard({ route, navigation }) {
       });
 
       Alert.alert("Sucesso", "Card criado com sucesso!");
+      dispatch(loadDecksRequest());
       dispatch(loadProfileRequest());
       navigation.goBack();
     } catch (error) {
@@ -97,7 +99,7 @@ export default function CreateCard({ route, navigation }) {
       />
 
       <SaveButton onPress={handleCreateCard} title="Salvar Card" />
-      <BackButton setModalVisible={setModalVisible} />
+      <BackButton />
     </ScrollView>
   );
 }

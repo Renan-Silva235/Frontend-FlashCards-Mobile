@@ -95,7 +95,6 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
 
-
   phraseText: {
     color: "#cbd5e1",
     flex: 1,
@@ -109,8 +108,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
-
-
   buttonText: {
     color: "#fff",
     textAlign: "center",
@@ -119,6 +116,13 @@ const styles = StyleSheet.create({
 
   loading: {
     marginTop: 40,
+  },
+
+  topBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
   },
 });
 

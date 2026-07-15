@@ -26,16 +26,13 @@ export default function FlashCardStudy({ navigation, route }) {
 
   const [studySessionId, setStudySessionId] = useState(null);
 
-  // Pega a lista de cards e o loading direto do Redux
   const { cards, loading } = useSelector((state) => state.study);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [studyFinished, setStudyFinished] = useState(false);
-  // Controle de Animação do Flip
   const flipAnimation = useRef(new Animated.Value(0)).current;
 
-  // Dispara a action do Redux Saga para buscar os cards no backend Java
   useEffect(() => {
     async function startStudy() {
       try {
@@ -187,7 +184,7 @@ export default function FlashCardStudy({ navigation, route }) {
         <Text style={styles.counterText}>
           Card {currentIndex + 1} de {cards.length}
         </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("Dashboard")}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <X size={24} color="#94a3b8" />
         </TouchableOpacity>
       </View>

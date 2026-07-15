@@ -17,6 +17,7 @@ import SpeakerButton from "../../components/CustomButton/SpeakerButton";
 import DeleteButton from "../../components/CustomButton/DeleteButton";
 import DeleteConfirmationModal from "../../components/CustomButton/DeleteConfirmationModal";
 import { loadProfileRequest } from "../../store/modules/auth/actions";
+import { X } from "lucide-react-native";
 
 export default function FlashCards({ route, navigation }) {
   const dispatch = useDispatch();
@@ -81,8 +82,12 @@ export default function FlashCards({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{deckName}</Text>
-
+      <View style={styles.topBar}>
+        <Text style={styles.title}>{deckName}</Text>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <X size={24} color="#94a3b8" />
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity
         style={styles.newCardButton}
         onPress={() =>
