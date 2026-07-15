@@ -4,6 +4,7 @@ import api from "../../config/api";
 import styles from "./styles";
 import CustomInput from "../../components/CustomInput";
 import SaveButton from "../../components/CustomButton/SaveButton";
+import showApiError from "../../utils/showApiError";
 
 export default function EditCard({ route, navigation }) {
   const { card } = route.params;
@@ -49,9 +50,7 @@ export default function EditCard({ route, navigation }) {
 
       navigation.goBack();
     } catch (error) {
-      console.log(error?.response?.data);
-
-      Alert.alert("Erro", "Não foi possível atualizar o card.");
+      showApiError(error, "Não foi possível atualizar o card.");
     }
   }
 

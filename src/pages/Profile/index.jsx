@@ -10,8 +10,10 @@ import {
 } from "lucide-react-native";
 import api from "../../config/api";
 import { signOut, loadProfileRequest } from "../../store/modules/auth/actions";
-import { VerifyCodeModal } from "../../components/VerifyCodeModal";
+import { VerifyCodeModal } from "../../components/Modal/VerifyCodeModal";
 import styles from "./styles";
+import { ChangePasswordModal } from "../../components/Modal/ChangePasswordModal";
+import showApiError from "../../utils/showApiError";
 
 export default function Profile() {
   const dispatch = useDispatch();
@@ -20,6 +22,7 @@ export default function Profile() {
   const profile = useSelector((state) => state.auth.profile);
   const [verifyModalVisible, setVerifyModalVisible] = useState(false);
   const [verifiedCode, setVerifiedCode] = useState("");
+  const [changePasswordVisible, setChangePasswordVisible] = useState(false);
 
   useEffect(() => {
     dispatch(loadProfileRequest());
@@ -31,14 +34,9 @@ export default function Profile() {
         email: user.email,
       });
 
-      Alert.alert("Código enviado", "Enviamos um código para seu e-mail.");
-
       setVerifyModalVisible(true);
     } catch (error) {
-      Alert.alert(
-        "Erro",
-        error.response?.data?.message || "Não foi possível enviar o código.",
-      );
+      showApiError(error, "erro ao enviar código");
     }
   };
 
@@ -106,17 +104,22 @@ export default function Profile() {
         <VerifyCodeModal
           visible={verifyModalVisible}
           email={user.email}
+          endpoint="/auth/password/verify-code"
           onClose={() => setVerifyModalVisible(false)}
           onSuccess={(code) => {
             setVerifyModalVisible(false);
             setVerifiedCode(code);
+            setChangePasswordVisible(true);
+          }}
+        />
 
-            Alert.alert(
-              "Código válido",
-              "Agora você poderá definir sua nova senha.",
-            );
-
-            // Aqui vamos abrir o segundo modal depois.
+        <ChangePasswordModal
+          visible={changePasswordVisible}
+          email={user.email}
+          code={verifiedCode}
+          onClose={() => {
+            setChangePasswordVisible(false);
+            setVerifiedCode("");
           }}
         />
       </View>

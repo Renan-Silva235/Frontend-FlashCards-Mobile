@@ -8,10 +8,17 @@ import {
   Alert,
 } from "react-native";
 
-import api from "../../config/api";
+import api from "../../../config/api";
 import styles from "./styles";
+import showApiError from "../../../utils/showApiError";
 
-export function VerifyCodeModal({ visible, email, onClose, onSuccess }) {
+export function VerifyCodeModal({
+  visible,
+  email,
+  endpoint,
+  onClose,
+  onSuccess,
+}) {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -24,7 +31,7 @@ export function VerifyCodeModal({ visible, email, onClose, onSuccess }) {
     try {
       setLoading(true);
 
-      await api.post("/auth/password/verify-code", {
+      await api.post(endpoint, {
         email,
         code,
       });
@@ -32,7 +39,7 @@ export function VerifyCodeModal({ visible, email, onClose, onSuccess }) {
       onSuccess(code);
       setCode("");
     } catch (error) {
-      Alert.alert("Erro", error.response?.data?.message || "Código inválido.");
+      showApiError(error, "Código inválido.");
     } finally {
       setLoading(false);
     }

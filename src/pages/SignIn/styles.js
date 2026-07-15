@@ -67,6 +67,14 @@ const styles = StyleSheet.create({
     color: "#94a3b8",
     marginBottom: 16,
   },
+
+  forgotPassword: {
+    alignSelf: "flex-end",
+    color: "#3b82f6",
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 20,
+  },
 });
 
 export default styles;

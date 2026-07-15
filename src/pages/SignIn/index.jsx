@@ -10,15 +10,21 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
 import { signInRequest } from "../../store/modules/auth/actions";
-import styles from "./styles"
-
+import styles from "./styles";
+import { ForgotPasswordModal } from "../../components/Modal/ForgotPasswordModal";
+import { VerifyCodeModal } from "../../components/Modal/VerifyCodeModal";
+import { ChangePasswordModal } from "../../components/Modal/ChangePasswordModal";
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [forgotPasswordVisible, setForgotPasswordVisible] = useState(false);
   const dispatch = useDispatch();
   const navigation = useNavigation();
   const loading = useSelector((state) => state.auth.loading);
+  const [verifyModalVisible, setVerifyModalVisible] = useState(false);
+  const [changePasswordVisible, setChangePasswordVisible] = useState(false);
+  const [recoveryEmail, setRecoveryEmail] = useState("");
+  const [verifiedCode, setVerifiedCode] = useState("");
 
   function handleSubmit() {
     if (email && password) {
@@ -57,6 +63,10 @@ export default function SignIn() {
           onChangeText={setPassword}
         />
 
+        <TouchableOpacity onPress={() => setForgotPasswordVisible(true)}>
+          <Text style={styles.forgotPassword}>Esqueceu a senha?</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity
           style={styles.buttonPrimary}
           onPress={handleSubmit}
@@ -79,7 +89,37 @@ export default function SignIn() {
           <Text style={styles.buttonText}>Criar Conta</Text>
         </TouchableOpacity>
       </View>
+      <ForgotPasswordModal
+        visible={forgotPasswordVisible}
+        onClose={() => setForgotPasswordVisible(false)}
+        onSuccess={(email) => {
+          setForgotPasswordVisible(false);
+          setRecoveryEmail(email);
+          setVerifyModalVisible(true);
+        }}
+      />
+
+      <VerifyCodeModal
+        visible={verifyModalVisible}
+        email={recoveryEmail}
+        endpoint="/auth/password/verify-code"
+        onClose={() => setVerifyModalVisible(false)}
+        onSuccess={(code) => {
+          setVerifyModalVisible(false);
+          setVerifiedCode(code);
+          setChangePasswordVisible(true);
+        }}
+      />
+      <ChangePasswordModal
+        visible={changePasswordVisible}
+        email={recoveryEmail}
+        code={verifiedCode}
+        onClose={() => {
+          setChangePasswordVisible(false);
+          setVerifiedCode("");
+          setRecoveryEmail("");
+        }}
+      />
     </View>
   );
 }
-

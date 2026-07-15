@@ -9,8 +9,8 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    justifyContent: "between",
-    alignItems: "center",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 24,
   },
   title: {
@@ -81,10 +81,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
   },
-  tabsContainer: {
-    flexDirection: "row",
-    gap: 8,
+  languageButton: {
+    backgroundColor: "#1e293b",
+    borderWidth: 1,
+    borderColor: "#334155",
+    borderRadius: 8,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
     marginBottom: 20,
+  },
+
+  languageButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
   },
   tabButton: {
     backgroundColor: "#334155",
@@ -150,6 +160,69 @@ const styles = StyleSheet.create({
     color: "#64748b",
     textAlign: "center",
     marginTop: 40,
+  },
+  languageSelector: {
+    backgroundColor: "#2563eb",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 8,
+    gap: 6,
+  },
+
+  languageSelectorText: {
+    color: "#fff",
+    fontSize: 18,
+  },
+
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.55)",
+    justifyContent: "flex-end",
+  },
+
+  languageModal: {
+    backgroundColor: "#1e293b",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
+  },
+
+  languageModalTitle: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 24,
+  },
+
+  languageOption: {
+    backgroundColor: "#0f172a",
+    borderWidth: 1,
+    borderColor: "#334155",
+    borderRadius: 12,
+    paddingVertical: 18,
+    paddingHorizontal: 18,
+    marginBottom: 12,
+  },
+
+  languageOptionText: {
+    color: "#fff",
+    fontSize: 17,
+    fontWeight: "600",
+  },
+
+  cancelButton: {
+    marginTop: 10,
+    alignItems: "center",
+    paddingVertical: 16,
+  },
+
+  cancelButtonText: {
+    color: "#94a3b8",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 

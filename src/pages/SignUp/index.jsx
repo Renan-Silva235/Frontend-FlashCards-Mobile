@@ -11,6 +11,8 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import api from "../../config/api";
 import styles from "./styles";
+import showApiError from "../../utils/showApiError";
+import { VerifyCodeModal } from "../../components/Modal/VerifyCodeModal";
 
 export default function SignUp() {
   const [name, setName] = useState("");
@@ -18,7 +20,8 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
+  const [verifyModalVisible, setVerifyModalVisible] = useState(false);
+  const [pendingUser, setPendingUser] = useState(null);
   const navigation = useNavigation();
 
   async function handleSignUp() {
@@ -34,16 +37,23 @@ export default function SignUp() {
 
     try {
       setLoading(false);
-      await api.post("/auth/register", { name, email, password });
+      await api.post("/auth/register/send-code", {
+        email,
+      });
+
+      setPendingUser({
+        name,
+        email,
+        password,
+      });
+
+      setVerifyModalVisible(true);
 
       Alert.alert("Sucesso", "Conta criada com sucesso!", [
         { text: "OK", onPress: () => navigation.navigate("SignIn") },
       ]);
     } catch (error) {
-      Alert.alert(
-        "Erro no cadastro",
-        "Não foi possível criar a conta. Verifique os dados ou a conexão.",
-      );
+      showApiError(error, "Erro no cadastro");
     }
   }
 
@@ -81,21 +91,23 @@ export default function SignUp() {
         <Text style={styles.label}>Senha</Text>
         <TextInput
           style={styles.input}
-          placeholder="••••••••"
+          placeholder="A senha deve conter no mínimo 6 caracteres"
           placeholderTextColor="#64748b"
           secureTextEntry
           value={password}
           onChangeText={setPassword}
+          maxLength={50}
         />
 
         <Text style={styles.label}>Confirmar Senha</Text>
         <TextInput
           style={styles.input}
-          placeholder="••••••••"
+          placeholder="Confirme a sua senha."
           placeholderTextColor="#64748b"
           secureTextEntry
           value={confirmPassword}
           onChangeText={setConfirmPassword}
+          maxLength={50}
         />
 
         <TouchableOpacity style={styles.buttonPrimary} onPress={handleSignUp}>
@@ -109,7 +121,27 @@ export default function SignUp() {
       >
         <Text style={styles.linkText}>Voltar ao login</Text>
       </TouchableOpacity>
+      <VerifyCodeModal
+        visible={verifyModalVisible}
+        email={pendingUser?.email}
+        endpoint="/auth/register/verify-code"
+        onClose={() => setVerifyModalVisible(false)}
+        onSuccess={async (code) => {
+          try {
+            await api.post("/auth/register", {
+              ...pendingUser,
+              code,
+            });
+
+            Alert.alert("Sucesso", "Conta criada com sucesso!");
+
+            setVerifyModalVisible(false);
+            navigation.goBack();
+          } catch (error) {
+            showApiError(error, "Erro no cadastro");
+          }
+        }}
+      />
     </ScrollView>
   );
 }
-
