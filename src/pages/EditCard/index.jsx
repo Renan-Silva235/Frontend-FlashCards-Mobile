@@ -1,8 +1,16 @@
 import React, { useState } from "react";
-import { Text, ScrollView, Alert } from "react-native";
+import {
+  Text,
+  ScrollView,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import api from "../../config/api";
 import styles from "./styles";
 import CustomInput from "../../components/CustomInput";
+import BackButton from "../../components/CustomButton/BackButton";
 import SaveButton from "../../components/CustomButton/SaveButton";
 import showApiError from "../../utils/showApiError";
 
@@ -55,50 +63,72 @@ export default function EditCard({ route, navigation }) {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Editar Card</Text>
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.content}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Text style={styles.title}>Editar Card</Text>
 
-      <CustomInput value={word} onChangeText={setWord} placeholder="Palavra" />
+          <CustomInput
+            value={word}
+            onChangeText={setWord}
+            placeholder="Palavra"
+          />
 
-      <CustomInput
-        value={translation}
-        onChangeText={setTranslation}
-        placeholder="Tradução"
-      />
+          <CustomInput
+            value={translation}
+            onChangeText={setTranslation}
+            placeholder="Tradução"
+          />
 
-      <CustomInput
-        value={present}
-        onChangeText={setPresent}
-        placeholder="Presente"
-      />
+          <CustomInput
+            value={present}
+            onChangeText={setPresent}
+            placeholder="Presente"
+          />
 
-      <CustomInput value={past} onChangeText={setPast} placeholder="Passado" />
+          <CustomInput
+            value={past}
+            onChangeText={setPast}
+            placeholder="Passado"
+          />
 
-      <CustomInput
-        value={future}
-        onChangeText={setFuture}
-        placeholder="Futuro"
-      />
+          <CustomInput
+            value={future}
+            onChangeText={setFuture}
+            placeholder="Futuro"
+          />
 
-      <CustomInput
-        value={examplePhrase1}
-        onChangeText={setExamplePhrase1}
-        placeholder="Exemplo 1"
-      />
+          <CustomInput
+            value={examplePhrase1}
+            onChangeText={setExamplePhrase1}
+            placeholder="Exemplo 1"
+          />
 
-      <CustomInput
-        value={examplePhrase2}
-        onChangeText={setExamplePhrase2}
-        placeholder="Exemplo 2"
-      />
+          <CustomInput
+            value={examplePhrase2}
+            onChangeText={setExamplePhrase2}
+            placeholder="Exemplo 2"
+          />
 
-      <CustomInput
-        value={examplePhrase3}
-        onChangeText={setExamplePhrase3}
-        placeholder="Exemplo 3"
-      />
+          <CustomInput
+            value={examplePhrase3}
+            onChangeText={setExamplePhrase3}
+            placeholder="Exemplo 3"
+          />
 
-      <SaveButton title="Salvar Alterações" onPress={handleUpdate} />
-    </ScrollView>
+          <SaveButton title="Salvar Alterações" onPress={handleUpdate} />
+
+          <BackButton />
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
+

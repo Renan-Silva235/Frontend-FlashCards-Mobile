@@ -4,8 +4,10 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
@@ -33,62 +35,70 @@ export default function SignIn() {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Flash Cards</Text>
-        <Text style={styles.subtitle}>
-          Aprenda idiomas de forma inteligente
-        </Text>
-      </View>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.header}>
+          <Text style={styles.title}>Flash Cards</Text>
+          <Text style={styles.subtitle}>
+            Aprenda idiomas de forma inteligente
+          </Text>
+        </View>
 
-      <View style={styles.form}>
-        <Text style={styles.label}>E-mail</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="seu@email.com"
-          placeholderTextColor="#64748b"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={email}
-          onChangeText={setEmail}
-        />
+        <View style={styles.form}>
+          <Text style={styles.label}>E-mail</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="seu@email.com"
+            placeholderTextColor="#64748b"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+          />
 
-        <Text style={styles.label}>Senha</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="••••••••"
-          placeholderTextColor="#64748b"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
+          <Text style={styles.label}>Senha</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="••••••••"
+            placeholderTextColor="#64748b"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
 
-        <TouchableOpacity onPress={() => setForgotPasswordVisible(true)}>
-          <Text style={styles.forgotPassword}>Esqueceu a senha?</Text>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={() => setForgotPasswordVisible(true)}>
+            <Text style={styles.forgotPassword}>Esqueceu a senha?</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.buttonPrimary}
-          onPress={handleSubmit}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Entrar</Text>
-          )}
-        </TouchableOpacity>
-      </View>
+          <TouchableOpacity
+            style={styles.buttonPrimary}
+            onPress={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>Entrar</Text>
+            )}
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>Não tem conta?</Text>
-        <TouchableOpacity
-          style={styles.buttonSecondary}
-          onPress={() => navigation.navigate("SignUp")}
-        >
-          <Text style={styles.buttonText}>Criar Conta</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Não tem conta?</Text>
+          <TouchableOpacity
+            style={styles.buttonSecondary}
+            onPress={() => navigation.navigate("SignUp")}
+          >
+            <Text style={styles.buttonText}>Criar Conta</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
       <ForgotPasswordModal
         visible={forgotPasswordVisible}
         onClose={() => setForgotPasswordVisible(false)}
@@ -120,6 +130,6 @@ export default function SignIn() {
           setRecoveryEmail("");
         }}
       />
-    </View>
+    </KeyboardAvoidingView>
   );
 }

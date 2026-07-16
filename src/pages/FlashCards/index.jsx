@@ -1,23 +1,20 @@
 import React, { useEffect, useState } from "react";
 import {
-  View,
   Text,
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  View,
 } from "react-native";
-import api from "../../config/api";
-import Modal from "react-native-modal";
-import styles from "./styles";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch } from "react-redux";
-import { getLanguageCode } from "../../services/speech/getLanguageCode";
-import EditButton from "../../components/CustomButton/EditButton";
-import CloseButton from "../../components/CustomButton/CloseButton";
-import SpeakerButton from "../../components/CustomButton/SpeakerButton";
-import DeleteButton from "../../components/CustomButton/DeleteButton";
-import DeleteConfirmationModal from "../../components/CustomButton/DeleteConfirmationModal";
-import { loadProfileRequest } from "../../store/modules/auth/actions";
 import { X } from "lucide-react-native";
+import DeleteConfirmationModal from "../../components/CustomButton/DeleteConfirmationModal";
+import api from "../../config/api";
+import { loadProfileRequest } from "../../store/modules/auth/actions";
+import FlashCardDetailsModal from "../../components/Modal/FlashCardDetailsModal";
+import FlashCardListItem from "../../components/CustomButton/FlashCardListItem";
+import styles from "./styles";
 
 export default function FlashCards({ route, navigation }) {
   const dispatch = useDispatch();
@@ -36,7 +33,6 @@ export default function FlashCards({ route, navigation }) {
       const response = await api.get(`/flashcards/deck/${deckId}`);
 
       setCards(response.data);
-    } catch (error) {
     } finally {
       setLoading(false);
     }
@@ -57,31 +53,23 @@ export default function FlashCards({ route, navigation }) {
 
   function renderCard({ item }) {
     return (
-      <View style={{ position: "relative" }}>
-        <DeleteButton
-          onPress={() => {
-            setCardToDelete(item);
-            setDeleteModalVisible(true);
-          }}
-        />
-
-        <TouchableOpacity
-          onPress={() => {
-            setSelectedCard(item);
-            setModalVisible(true);
-          }}
-          style={styles.card}
-        >
-          <Text style={styles.cardWord}>{item.word}</Text>
-
-          <Text style={styles.cardTranslation}>{item.translation}</Text>
-        </TouchableOpacity>
-      </View>
+      <FlashCardListItem
+        item={item}
+        onDelete={(card) => {
+          setCardToDelete(card);
+          setDeleteModalVisible(true);
+        }}
+        onPress={(card) => {
+          setSelectedCard(card);
+          setModalVisible(true);
+        }}
+        styles={styles}
+      />
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
       <View style={styles.topBar}>
         <Text style={styles.title}>{deckName}</Text>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -126,110 +114,20 @@ export default function FlashCards({ route, navigation }) {
         />
       )}
 
-      <Modal
-        isVisible={modalVisible}
-        onBackdropPress={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalWord}>{selectedCard?.word}</Text>
+      <FlashCardDetailsModal
+        visible={modalVisible}
+        card={selectedCard}
+        deckLanguage={deckLanguage}
+        onClose={() => setModalVisible(false)}
+        onEdit={() => {
+          setModalVisible(false);
 
-            <SpeakerButton
-              text={selectedCard?.word}
-              language={getLanguageCode(deckLanguage)}
-              big
-            />
-          </View>
-
-          <Text style={styles.translation}>{selectedCard?.translation}</Text>
-
-          {selectedCard?.past ? (
-            <View style={styles.rowSpeech}>
-              <Text style={{ color: "#fff" }}>Past: {selectedCard.past}</Text>
-
-              <SpeakerButton
-                text={selectedCard.past}
-                language={getLanguageCode(deckLanguage)}
-              />
-            </View>
-          ) : null}
-
-          {selectedCard?.present ? (
-            <View style={styles.rowSpeech}>
-              <Text style={{ color: "#fff" }}>
-                Present: {selectedCard.present}
-              </Text>
-
-              <SpeakerButton
-                text={selectedCard.present}
-                language={getLanguageCode(deckLanguage)}
-              />
-            </View>
-          ) : null}
-
-          {selectedCard?.future ? (
-            <View style={styles.rowSpeech}>
-              <Text style={{ color: "#fff" }}>
-                Future: {selectedCard.future}
-              </Text>
-
-              <SpeakerButton
-                text={selectedCard.future}
-                language={getLanguageCode(deckLanguage)}
-              />
-            </View>
-          ) : null}
-
-          {selectedCard?.examplePhrase1 ? (
-            <View style={styles.rowSpeechTop}>
-              <Text style={styles.phraseText}>
-                • {selectedCard.examplePhrase1}
-              </Text>
-
-              <SpeakerButton
-                text={selectedCard.examplePhrase1}
-                language={getLanguageCode(deckLanguage)}
-              />
-            </View>
-          ) : null}
-
-          {selectedCard?.examplePhrase2 ? (
-            <View style={styles.rowSpeech}>
-              <Text style={styles.phraseText}>
-                • {selectedCard.examplePhrase2}
-              </Text>
-
-              <SpeakerButton
-                text={selectedCard.examplePhrase2}
-                language={getLanguageCode(deckLanguage)}
-              />
-            </View>
-          ) : null}
-
-          {selectedCard?.examplePhrase3 ? (
-            <View style={styles.rowSpeech}>
-              <Text style={styles.phraseText}>
-                • {selectedCard.examplePhrase3}
-              </Text>
-
-              <SpeakerButton
-                text={selectedCard.examplePhrase3}
-                language={getLanguageCode(deckLanguage)}
-              />
-            </View>
-          ) : null}
-          <EditButton
-            onPress={() => {
-              setModalVisible(false);
-
-              navigation.navigate("EditCard", {
-                card: selectedCard,
-              });
-            }}
-          />
-          <CloseButton onPress={() => setModalVisible(false)} />
-        </View>
-      </Modal>
+          navigation.navigate("EditCard", {
+            card: selectedCard,
+          });
+        }}
+        styles={styles}
+      />
       <DeleteConfirmationModal
         visible={deleteModalVisible}
         message="Deseja realmente excluir este card?"
@@ -243,11 +141,9 @@ export default function FlashCards({ route, navigation }) {
 
             loadCards();
             dispatch(loadProfileRequest());
-          } catch (error) {
-            console.log(error?.response?.data);
-          }
+          } catch {}
         }}
       />
-    </View>
+    </SafeAreaView>
   );
 }

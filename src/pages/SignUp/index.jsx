@@ -7,6 +7,8 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import api from "../../config/api";
@@ -58,69 +60,74 @@ export default function SignUp() {
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      keyboardShouldPersistTaps="handled"
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <View style={styles.header}>
-        <Text style={styles.title}>Criar Conta</Text>
-        <Text style={styles.subtitle}>Comece seu aprendizado agora</Text>
-      </View>
-
-      <View style={styles.form}>
-        <Text style={styles.label}>Nome</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Seu nome"
-          placeholderTextColor="#64748b"
-          value={name}
-          onChangeText={setName}
-        />
-
-        <Text style={styles.label}>E-mail</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="seu@email.com"
-          placeholderTextColor="#64748b"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={email}
-          onChangeText={setEmail}
-        />
-
-        <Text style={styles.label}>Senha</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="A senha deve conter no mínimo 6 caracteres"
-          placeholderTextColor="#64748b"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-          maxLength={50}
-        />
-
-        <Text style={styles.label}>Confirmar Senha</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Confirme a sua senha."
-          placeholderTextColor="#64748b"
-          secureTextEntry
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          maxLength={50}
-        />
-
-        <TouchableOpacity style={styles.buttonPrimary} onPress={handleSignUp}>
-          <Text style={styles.buttonText}>Criar Conta</Text>
-        </TouchableOpacity>
-      </View>
-
-      <TouchableOpacity
-        style={styles.linkButton}
-        onPress={() => navigation.navigate("SignIn")}
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
       >
-        <Text style={styles.linkText}>Voltar ao login</Text>
-      </TouchableOpacity>
+        <View style={styles.header}>
+          <Text style={styles.title}>Criar Conta</Text>
+          <Text style={styles.subtitle}>Comece seu aprendizado agora</Text>
+        </View>
+
+        <View style={styles.form}>
+          <Text style={styles.label}>Nome</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Seu nome"
+            placeholderTextColor="#64748b"
+            value={name}
+            onChangeText={setName}
+          />
+
+          <Text style={styles.label}>E-mail</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="seu@email.com"
+            placeholderTextColor="#64748b"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+          />
+
+          <Text style={styles.label}>Senha</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="A senha deve conter no mínimo 6 caracteres"
+            placeholderTextColor="#64748b"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+            maxLength={50}
+          />
+
+          <Text style={styles.label}>Confirmar Senha</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Confirme a sua senha."
+            placeholderTextColor="#64748b"
+            secureTextEntry
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            maxLength={50}
+          />
+
+          <TouchableOpacity style={styles.buttonPrimary} onPress={handleSignUp}>
+            <Text style={styles.buttonText}>Criar Conta</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          style={styles.linkButton}
+          onPress={() => navigation.navigate("SignIn")}
+        >
+          <Text style={styles.linkText}>Voltar ao login</Text>
+        </TouchableOpacity>
+      </ScrollView>
       <VerifyCodeModal
         visible={verifyModalVisible}
         email={pendingUser?.email}
@@ -142,6 +149,6 @@ export default function SignUp() {
           }
         }}
       />
-    </ScrollView>
+    </KeyboardAvoidingView>
   );
 }

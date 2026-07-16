@@ -1,16 +1,20 @@
 import React from "react";
-import { SafeAreaView, StatusBar } from "react-native";
 import { Provider } from "react-redux";
-import store from "./store";
+import { StatusBar } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+
 import Navigation from "./navigation";
+import store from "./store";
 
 export default function App() {
   return (
     <Provider store={store}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#0f172a" }}>
-        <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
-        <Navigation />
-      </SafeAreaView>
+      <SafeAreaProvider>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#0f172a" }} edges={['top', 'left', 'right']}>
+          <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
+          <Navigation />
+        </SafeAreaView>
+      </SafeAreaProvider>
     </Provider>
   );
 }

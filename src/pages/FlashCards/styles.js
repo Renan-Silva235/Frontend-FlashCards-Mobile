@@ -72,10 +72,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
-  speakerIconMain: {
-    fontSize: 24,
-  },
-
   translation: {
     color: "#94a3b8",
     marginBottom: 20,
@@ -98,14 +94,6 @@ const styles = StyleSheet.create({
   phraseText: {
     color: "#cbd5e1",
     flex: 1,
-  },
-
-  editButton: {
-    backgroundColor: "#f59e0b",
-    padding: 12,
-    borderRadius: 8,
-    marginTop: 20,
-    marginBottom: 10,
   },
 
   buttonText: {

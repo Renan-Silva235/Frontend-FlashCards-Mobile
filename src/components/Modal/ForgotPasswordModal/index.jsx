@@ -6,6 +6,9 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  KeyboardAvoidingView,
+  ScrollView,
+  Platform,
 } from "react-native";
 
 import { Mail } from "lucide-react-native";
@@ -44,45 +47,54 @@ export function ForgotPasswordModal({ visible, onClose, onSuccess }) {
 
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.overlay}>
-        <View style={styles.container}>
-          <View style={styles.iconContainer}>
-            <Mail size={42} color="#3b82f6" />
-          </View>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={styles.overlay}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.container}>
+            <View style={styles.iconContainer}>
+              <Mail size={42} color="#3b82f6" />
+            </View>
 
-          <Text style={styles.title}>Esqueceu a senha?</Text>
+            <Text style={styles.title}>Esqueceu a senha?</Text>
 
-          <Text style={styles.description}>
-            Informe seu e-mail cadastrado para receber um código de recuperação.
-          </Text>
-
-          <Text style={styles.label}>E-mail</Text>
-
-          <TextInput
-            style={styles.input}
-            placeholder="Digite seu e-mail"
-            placeholderTextColor="#64748b"
-            keyboardType="email-address"
-            autoCapitalize="none"
-            value={email}
-            onChangeText={setEmail}
-          />
-
-          <TouchableOpacity
-            style={styles.button}
-            disabled={loading}
-            onPress={handleSendCode}
-          >
-            <Text style={styles.buttonText}>
-              {loading ? "Enviando..." : "Enviar código"}
+            <Text style={styles.description}>
+              Informe seu e-mail cadastrado para receber um código de recuperação.
             </Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity onPress={onClose}>
-            <Text style={styles.cancel}>Cancelar</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+            <Text style={styles.label}>E-mail</Text>
+
+            <TextInput
+              style={styles.input}
+              placeholder="Digite seu e-mail"
+              placeholderTextColor="#64748b"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              value={email}
+              onChangeText={setEmail}
+            />
+
+            <TouchableOpacity
+              style={styles.button}
+              disabled={loading}
+              onPress={handleSendCode}
+            >
+              <Text style={styles.buttonText}>
+                {loading ? "Enviando..." : "Enviar código"}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={onClose}>
+              <Text style={styles.cancel}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
+
