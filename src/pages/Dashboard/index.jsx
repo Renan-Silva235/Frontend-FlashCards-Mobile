@@ -4,23 +4,25 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   FlatList,
   ActivityIndicator,
-  Alert,
 } from "react-native";
-import { Search, Plus, Star } from "lucide-react-native";
+import { ChevronDown, Search } from "lucide-react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { loadDecksRequest } from "../../store/modules/deck/actions";
 import styles from "./styles";
-import DeleteButton from "../../components/CustomButton/DeleteButton";
 import api from "../../config/api";
 import DeleteConfirmationModal from "../../components/CustomButton/DeleteConfirmationModal";
+import LanguageSelectionModal from "../../components/Modal/LanguageSelectionModal";
+import DeckCardItem from "../../components/CustomButton/DeckCardItem";
 import * as DashboardActions from "../../store/modules/dashboard/actions";
 import { toggleFavoriteRequest } from "../../store/modules/deck/actions";
 import { loadProfileRequest } from "../../store/modules/auth/actions";
-import { Modal } from "react-native";
-import { ChevronDown } from "lucide-react-native";
+import {
+  getLanguageFlag,
+  getLanguageLabel,
+  languageOptions,
+} from "../../utils/languages";
 
 export default function Dashboard({ navigation }) {
   const dispatch = useDispatch();
@@ -65,9 +67,7 @@ export default function Dashboard({ navigation }) {
 
       dispatch(loadDecksRequest());
       dispatch(loadProfileRequest());
-    } catch (error) {
-      console.log(error?.response?.data);
-    }
+    } catch {}
   }
   const filteredDecks = decks.filter((deck) => {
     const matchesSearch =
@@ -81,55 +81,26 @@ export default function Dashboard({ navigation }) {
   });
 
   function renderDeckCard({ item }) {
+    const languageLabel = getLanguageLabel(item.language);
+
     return (
-      <TouchableOpacity
-        style={styles.deckCard}
-        onPress={() =>
+      <DeckCardItem
+        item={item}
+        languageLabel={languageLabel}
+        onDelete={(deck) => {
+          setDeckToDelete(deck);
+          setDeleteModalVisible(true);
+        }}
+        onOpen={(deck) =>
           navigation.navigate("FlashCards", {
-            deckId: item.id,
-            deckName: item.name,
-            deckLanguage: item.language,
+            deckId: deck.id,
+            deckName: deck.name,
+            deckLanguage: deck.language,
           })
         }
-      >
-        <DeleteButton
-          onPress={() => {
-            setDeckToDelete(item);
-            setDeleteModalVisible(true);
-          }}
-        />
-        <View style={styles.deckHeader}>
-          <View>
-            <Text style={styles.deckName}>{item.name}</Text>
-            <Text style={styles.deckCategory}>{item.category}</Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => dispatch(toggleFavoriteRequest(item.id))}
-          >
-            <Star
-              size={20}
-              color={item.favorite ? "#eab308" : "#64748b"}
-              fill={item.favorite ? "#eab308" : "none"}
-            />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.deckFooter}>
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>
-              {item.language === "English"
-                ? "🇺🇸 Inglês"
-                : item.language === "Spanish"
-                  ? "🇪🇸 Espanhol"
-                  : item.language === "Turkish"
-                    ? "🇹🇷 Turco"
-                    : null}
-            </Text>
-          </View>
-
-          <Text style={styles.cardCount}>{item.cardsCount || 0} Cards</Text>
-        </View>
-      </TouchableOpacity>
+        onToggleFavorite={(deck) => dispatch(toggleFavoriteRequest(deck.id))}
+        styles={styles}
+      />
     );
   }
 
@@ -147,11 +118,7 @@ export default function Dashboard({ navigation }) {
             onPress={() => setLanguageModalVisible(true)}
           >
             <Text style={styles.languageSelectorText}>
-              {selectedLanguage === "English"
-                ? "🇺🇸"
-                : selectedLanguage === "Spanish"
-                  ? "🇪🇸"
-                  : "🇹🇷"}
+              {getLanguageFlag(selectedLanguage)}
             </Text>
 
             <ChevronDown size={18} color="#fff" />
@@ -200,50 +167,17 @@ export default function Dashboard({ navigation }) {
           </View>
         </View>
 
-        <Modal visible={languageModalVisible} transparent animationType="slide">
-          <View style={styles.modalOverlay}>
-            <View style={styles.languageModal}>
-              <Text style={styles.languageModalTitle}>Selecione um idioma</Text>
-
-              <TouchableOpacity
-                style={styles.languageOption}
-                onPress={() => {
-                  setSelectedLanguage("English");
-                  setLanguageModalVisible(false);
-                }}
-              >
-                <Text style={styles.languageOptionText}>🇺🇸 Inglês</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.languageOption}
-                onPress={() => {
-                  setSelectedLanguage("Spanish");
-                  setLanguageModalVisible(false);
-                }}
-              >
-                <Text style={styles.languageOptionText}>🇪🇸 Espanhol</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.languageOption}
-                onPress={() => {
-                  setSelectedLanguage("Turkish");
-                  setLanguageModalVisible(false);
-                }}
-              >
-                <Text style={styles.languageOptionText}>🇹🇷 Turco</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={() => setLanguageModalVisible(false)}
-              >
-                <Text style={styles.cancelButtonText}>Cancelar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
+        <LanguageSelectionModal
+          visible={languageModalVisible}
+          title="Selecione um idioma"
+          options={languageOptions}
+          onCancel={() => setLanguageModalVisible(false)}
+          onSelect={(value) => {
+            setSelectedLanguage(value);
+            setLanguageModalVisible(false);
+          }}
+          styles={styles}
+        />
 
         {loading ? (
           <ActivityIndicator

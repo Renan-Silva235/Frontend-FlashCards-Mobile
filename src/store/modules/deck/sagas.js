@@ -108,7 +108,6 @@ export function* toggleFavorite({ payload }) {
     const { deckId } = payload;
 
     const token = yield select((state) => state.auth.token);
-    console.log("TOKEN TOGGLE:", token);
     const response = yield call(
       api.patch,
       `/decks/${deckId}/favorite`,

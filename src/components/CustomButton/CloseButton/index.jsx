@@ -1,10 +1,13 @@
-import { TouchableOpacity, Text } from "react-native";
+import ActionButton from "../ActionButton";
 import styles from "./styles";
 
 export default function CloseButton({ onPress }) {
   return (
-    <TouchableOpacity style={styles.button} onPress={onPress}>
-      <Text style={styles.text}>Fechar</Text>
-    </TouchableOpacity>
+    <ActionButton
+      buttonStyle={styles.button}
+      label="Fechar"
+      onPress={onPress}
+      textStyle={styles.text}
+    />
   );
 }

@@ -2,13 +2,15 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   TouchableWithoutFeedback,
   Animated,
   ActivityIndicator,
   Alert,
+  ScrollView,
+  useWindowDimensions,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { X, Volume2, Check, Minus } from "lucide-react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { speak } from "../../services/speech/speechService";
@@ -23,6 +25,7 @@ import api from "../../config/api";
 export default function FlashCardStudy({ navigation, route }) {
   const { deckId, deckLanguage } = route.params;
   const dispatch = useDispatch();
+  const { height } = useWindowDimensions();
 
   const [studySessionId, setStudySessionId] = useState(null);
 
@@ -30,7 +33,6 @@ export default function FlashCardStudy({ navigation, route }) {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const [studyFinished, setStudyFinished] = useState(false);
   const flipAnimation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -42,9 +44,7 @@ export default function FlashCardStudy({ navigation, route }) {
 
         setStudySessionId(response.data.id);
         dispatch(loadStudyCardsRequest(deckId));
-      } catch (error) {
-        console.log(error?.response?.data);
-      }
+      } catch {}
     }
 
     startStudy();
@@ -66,9 +66,7 @@ export default function FlashCardStudy({ navigation, route }) {
               }),
           },
         ]);
-      } catch (error) {
-        console.log(error?.response?.data);
-      }
+      } catch {}
     }
 
     if (!loading && cards.length === 0 && studySessionId) {
@@ -106,17 +104,8 @@ export default function FlashCardStudy({ navigation, route }) {
     setFlipped(!flipped);
   }
 
-  async function finishStudySession() {
-    try {
-      await api.put(`/study-sessions/${studySessionId}/end`);
-    } catch (error) {
-      console.log(error?.response?.data);
-    }
-  }
-
   async function handleMarkCard(status) {
     const currentCard = cards[currentIndex];
-    // Dispara a action do Redux para salvar a revisão (Errei, Difícil, Acertei) via Saga
     dispatch(reviewCardRequest(studySessionId, currentCard.id, status));
 
     if (flipped) handleFlip();
@@ -128,19 +117,20 @@ export default function FlashCardStudy({ navigation, route }) {
 
   if (loading && cards.length === 0) {
     return (
-      <View style={[styles.container, { justifyContent: "center" }]}>
+      <SafeAreaView style={[styles.container, { justifyContent: "center" }]} edges={["bottom"]}>
         <ActivityIndicator size="large" color="#3b82f6" />
-      </View>
+      </SafeAreaView>
     );
   }
 
-  if (cards.length === 0 && !studyFinished) {
+  if (cards.length === 0) {
     return (
-      <View
+      <SafeAreaView
         style={[
           styles.container,
           { justifyContent: "center", alignItems: "center" },
         ]}
+        edges={["bottom"]}
       >
         <Text style={styles.emptyText}>
           Nenhum card para estudar no momento!
@@ -155,7 +145,7 @@ export default function FlashCardStudy({ navigation, route }) {
         >
           <Text style={styles.buttonText}>Voltar ao Dashboard</Text>
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -163,22 +153,30 @@ export default function FlashCardStudy({ navigation, route }) {
 
   if (!activeCard) {
     return (
-      <View
+      <SafeAreaView
         style={[
           styles.container,
           { justifyContent: "center", alignItems: "center" },
         ]}
+        edges={["bottom"]}
       >
         <ActivityIndicator size="large" color="#3b82f6" />
-      </View>
+      </SafeAreaView>
     );
   }
 
   const frontAnimatedStyle = { transform: [{ rotateY: frontInterpolate }] };
   const backAnimatedStyle = { transform: [{ rotateY: backInterpolate }] };
+  const cardHeight = Math.max(240, Math.min(320, Math.round(height * 0.38)));
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
       {/* Top Bar */}
       <View style={styles.topBar}>
         <Text style={styles.counterText}>
@@ -190,7 +188,7 @@ export default function FlashCardStudy({ navigation, route }) {
       </View>
 
       {/* Container do Card Flip */}
-      <View style={styles.cardContainer}>
+      <View style={[styles.cardContainer, { height: cardHeight }]}>
         <TouchableWithoutFeedback onPress={handleFlip}>
           <View style={{ flex: 1 }}>
             {/* Frente */}
@@ -203,7 +201,9 @@ export default function FlashCardStudy({ navigation, route }) {
               ]}
             >
               <Text style={styles.cardTitle}>Palavra</Text>
-              <Text style={styles.mainWord}>{activeCard.word}</Text>
+              <Text style={[styles.mainWord, height < 700 && { fontSize: 30 }]}>
+                {activeCard.word}
+              </Text>
               <Text style={styles.hintText}>Toque no card para virar</Text>
             </Animated.View>
 
@@ -217,7 +217,9 @@ export default function FlashCardStudy({ navigation, route }) {
               ]}
             >
               <Text style={styles.cardTitle}>Tradução</Text>
-              <Text style={styles.mainWord}>{activeCard.translation}</Text>
+              <Text style={[styles.mainWord, height < 700 && { fontSize: 30 }]}>
+                {activeCard.translation}
+              </Text>
 
               <View style={styles.tensesContainer}>{/* tempos verbais */}</View>
             </Animated.View>
@@ -225,12 +227,10 @@ export default function FlashCardStudy({ navigation, route }) {
         </TouchableWithoutFeedback>
 
         <View
-          style={{
-            position: "absolute",
-            bottom: 40,
-            alignSelf: "center",
-            zIndex: 999,
-          }}
+          style={[
+            styles.audioWrapper,
+            { bottom: Math.max(16, Math.round(height * 0.05)) },
+          ]}
         >
           <TouchableOpacity
             style={styles.audioButton}
@@ -280,6 +280,7 @@ export default function FlashCardStudy({ navigation, route }) {
           <Text style={styles.btnText}>Fácil</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
+    </SafeAreaView>
   );
 }

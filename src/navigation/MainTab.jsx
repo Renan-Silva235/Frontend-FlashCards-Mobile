@@ -1,14 +1,16 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Grid, PlusCircle } from "lucide-react-native";
+import { Grid, PlusCircle, User } from "lucide-react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Dashboard from "../pages/Dashboard";
 import DeckList from "../pages/CreateDeck";
-import { User } from "lucide-react-native";
 import Profile from "../pages/Profile";
 const Tab = createBottomTabNavigator();
 
 export default function MainTab() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -18,8 +20,8 @@ export default function MainTab() {
         tabBarStyle: {
           backgroundColor: "#020617",
           borderTopColor: "#334155",
-          paddingBottom: 5,
-          height: 60,
+          paddingBottom: Math.max(5, insets.bottom),
+          height: 60 + insets.bottom,
         },
       }}
     >

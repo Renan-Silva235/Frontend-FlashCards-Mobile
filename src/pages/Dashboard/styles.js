@@ -17,25 +17,12 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "bold",
     color: "#fff",
+    flexShrink: 1,
   },
   subtitle: {
     color: "#94a3b8",
     fontSize: 14,
     marginTop: 4,
-  },
-  createButton: {
-    backgroundColor: "#2563eb",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    gap: 6,
-  },
-  createButtonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 14,
   },
   searchContainer: {
     position: "relative",
@@ -60,11 +47,13 @@ const styles = StyleSheet.create({
   },
   statsGrid: {
     flexDirection: "row",
+    flexWrap: "wrap",
     gap: 12,
     marginBottom: 24,
   },
   statBox: {
     flex: 1,
+    minWidth: "20%",
     backgroundColor: "rgba(30, 41, 59, 0.5)",
     borderWidth: 1,
     borderColor: "#334155",
@@ -80,37 +69,7 @@ const styles = StyleSheet.create({
     color: "#94a3b8",
     fontSize: 12,
     marginTop: 4,
-  },
-  languageButton: {
-    backgroundColor: "#1e293b",
-    borderWidth: 1,
-    borderColor: "#334155",
-    borderRadius: 8,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    marginBottom: 20,
-  },
-
-  languageButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  tabButton: {
-    backgroundColor: "#334155",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-  },
-  tabButtonActive: {
-    backgroundColor: "#2563eb",
-  },
-  tabText: {
-    color: "#94a3b8",
-    fontWeight: "500",
-  },
-  tabTextActive: {
-    color: "#fff",
+    textAlign: "center",
   },
   deckCard: {
     backgroundColor: "#1e293b",
@@ -122,14 +81,15 @@ const styles = StyleSheet.create({
   },
   deckHeader: {
     flexDirection: "row",
-    justifyContent: "between",
-    alignItems: "start",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 16,
   },
   deckName: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#fff",
+    flexShrink: 1,
   },
   deckCategory: {
     color: "#94a3b8",
@@ -138,7 +98,7 @@ const styles = StyleSheet.create({
   },
   deckFooter: {
     flexDirection: "row",
-    justifyContent: "between",
+    justifyContent: "space-between",
     alignItems: "center",
   },
   badge: {
@@ -146,6 +106,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 4,
+    flexShrink: 1,
   },
   badgeText: {
     color: "#e2e8f0",
@@ -169,6 +130,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 8,
     gap: 6,
+    marginLeft: 12,
   },
 
   languageSelectorText: {
@@ -187,6 +149,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     padding: 24,
+    maxHeight: "70%",
   },
 
   languageModalTitle: {

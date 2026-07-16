@@ -1,6 +1,3 @@
-console.log("ACTIONS DASHBOARD CARREGADO")
-
-
 export function loadStatisticsRequest(language) {
     return {
         type: "@dashboard/LOAD_STATISTICS_REQUEST",

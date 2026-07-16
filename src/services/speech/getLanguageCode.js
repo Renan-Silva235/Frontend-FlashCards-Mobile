@@ -1,15 +1,5 @@
+import { languageSpeechCodes } from "../../utils/languages";
+
 export function getLanguageCode(language) {
-   switch (language) {
-     case "English":
-       return "en-US";
-
-     case "Spanish":
-       return "es-ES";
-
-     case "Turkish":
-       return "tr-TR";
-
-     default:
-       return "en-US";
-   }
- }
+  return languageSpeechCodes[language] ?? "en-US";
+}

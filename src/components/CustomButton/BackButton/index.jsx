@@ -1,12 +1,16 @@
-import { TouchableOpacity, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import ActionButton from "../ActionButton";
 import styles from "../CloseButton/styles";
 
-export default function CloseButton() {
+export default function BackButton() {
   const navigation = useNavigation();
+
   return (
-    <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-      <Text style={styles.text}>Voltar</Text>
-    </TouchableOpacity>
+    <ActionButton
+      buttonStyle={styles.button}
+      label="Voltar"
+      onPress={() => navigation.goBack()}
+      textStyle={styles.text}
+    />
   );
 }
