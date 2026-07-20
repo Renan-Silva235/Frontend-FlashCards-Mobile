@@ -175,18 +175,6 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "600",
   },
-
-  cancelButton: {
-    marginTop: 10,
-    alignItems: "center",
-    paddingVertical: 16,
-  },
-
-  cancelButtonText: {
-    color: "#94a3b8",
-    fontSize: 16,
-    fontWeight: "600",
-  },
 });
 
 export default styles;

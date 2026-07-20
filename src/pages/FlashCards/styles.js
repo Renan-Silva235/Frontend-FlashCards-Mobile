@@ -112,6 +112,31 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
+
+  navigationContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 16,
+  },
+
+  navigationButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+  },
+
+  navigationText: {
+    color: "#94a3b8",
+    fontSize: 16,
+    fontWeight: "600",
+    marginHorizontal: 8,
+  },
+
+  navigationPlaceholder: {
+    width: 100, // Approximate width of the button to keep layout balanced
+  },
 });
 
 export default styles;

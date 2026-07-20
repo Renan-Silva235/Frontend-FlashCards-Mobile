@@ -117,14 +117,15 @@ export default function FlashCards({ route, navigation }) {
 
       <FlashCardDetailsModal
         visible={modalVisible}
-        card={selectedCard}
+        cards={cards}
+        initialCardIndex={cards.findIndex(c => c.id === selectedCard?.id) !== -1 ? cards.findIndex(c => c.id === selectedCard?.id) : 0}
         deckLanguage={deckLanguage}
         onClose={() => setModalVisible(false)}
-        onEdit={() => {
+        onEdit={(currentCard) => {
           setModalVisible(false);
 
           navigation.navigate("EditCard", {
-            card: selectedCard,
+            card: currentCard,
           });
         }}
         styles={styles}
